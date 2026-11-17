@@ -43,7 +43,7 @@ h3{font-size:18px;margin:0 0 6px}
 .lead{max-width:70ch;margin:0 0 18px;color:var(--ink)}
 .frame{position:relative;width:100%;border:1px solid var(--line);background:#fff}
 .frame.ds{aspect-ratio:4/3;max-height:1100px}
-.frame.oc{aspect-ratio:1600/900}
+.frame.oc{aspect-ratio:1600/960}
 .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .bar{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;margin:10px 0 0;font-size:14px;color:var(--muted)}
 .btn{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;background:var(--orange);color:#14325C;font-weight:700;text-decoration:none;border-radius:2px}
@@ -83,13 +83,13 @@ footer a{color:#fff}
 <body>
 <header class="top"><div class="wrap">
   <a class="brand" href="#top">Modal Shift Analytics · Perfetti Van Melle</a>
-  <nav aria-label="Sections"><a href="#dashboard">Dashboard</a><a href="#lineage">Data lineage</a><a href="#results">Results</a><a href="#model">Model</a><a href="#team">Team</a></nav>
+  <nav aria-label="Sections"><a href="#dashboard">Dashboard</a><a href="#lineage">Data lineage</a><a href="#results">Results</a><a href="#model">Model</a><a href="#scope">Scope</a><a href="#downloads">Downloads</a><a href="#team">Team</a></nav>
 </div></header>
 
 <section class="hero band" id="top"><div class="wrap">
   <div>
     <h1>Rail wins Rotterdam; road and barge tie on Antwerp</h1>
-    <p>Road, rail or barge for the maritime export containers from PVM’s Breda plant, up to about 13,500 t or 822 forty-foot boxes a year (an upper bound: the export proxy leaves out domestic Dutch sales), to Rotterdam Maasvlakte and Antwerp Deurganckdok. Results at default priorities: cost 30%, time 50%, CO2 20%, with a 50/50 port split.</p>
+    <p>Road, rail or barge for the maritime export containers from PVM’s Breda plant to Rotterdam Maasvlakte and Antwerp Deurganckdok: up to about 13,500 t or 822 forty-foot boxes a year. That volume is an upper bound, because the proxy behind it covers exports only and leaves out domestic Dutch sales. Results at default priorities: cost 30%, time 50%, CO2 20%, with a 50/50 port split.</p>
     <div class="rule"></div>
   </div>
   <div class="figs">
@@ -117,9 +117,9 @@ footer a{color:#fff}
 
 <section class="band" id="lineage" style="background:var(--panel)"><div class="wrap">
   <h2>Where every input feeds the decision</h2>
-  <p class="lead">Each mode splits into cost, time and CO2, then into the main leg and the truck leg to the terminal. Hover over a box to see its source.</p>
+  <p class="lead">Each mode splits into cost, time and CO2, then into the main leg and the truck leg to the terminal. It opens at the top level: use <b>More detail</b> to add levels, or click a box to follow that branch. Hover over a box to see its source. <a href="#" id="ocfull">Open the chart full screen</a>.</p>
   <div class="two">
-    <div class="frame oc"><iframe title="Data lineage chart" srcdoc="&lt;!DOCTYPE html&gt;
+    <div class="frame oc"><iframe id="ocframe" title="Data lineage chart" srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
@@ -168,15 +168,33 @@ footer a{color:#fff}
   .legend ul { list-style: none; margin: 0 0 6px; padding: 0; display: flex; gap: 12px; }
   .legend li { display: flex; align-items: center; gap: 5px; }
   .legend .sw { width: 16px; height: 11px; border: 1px solid rgba(0,0,0,.4); border-radius: 2px; }
-header{display:none}
+  #controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px 24px 2px; font-size: 14px; }
+  #controls button { font: inherit; min-height: 34px; padding: 0 12px; border: 1px solid #b9c4cf; background: #fff; border-radius: 4px; cursor: pointer; color: #1c2430; }
+  #controls button:hover:not(:disabled), #controls button:focus-visible { border-color: var(--teal); outline: 2px solid var(--teal); outline-offset: 1px; }
+  #controls button:disabled { opacity: .45; cursor: default; }
+  #controls .lvl { font-weight: 600; min-width: 92px; text-align: center; }
+  #crumbs { color: #4a5868; }
+  #crumbs a { color: var(--teal); cursor: pointer; text-decoration: underline; }
+  .box.more { cursor: pointer; box-shadow: inset 0 -4px 0 rgba(255,255,255,.55); }
+  .box.focus { outline: 3px solid #F47B20; outline-offset: 1px; }
 &lt;/style&gt;
+&lt;script&gt;if (window.self !== window.top) document.documentElement.classList.add(&quot;embedded&quot;);&lt;/script&gt;
+&lt;style&gt;.embedded header{display:none}&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;header&gt;&lt;h1&gt;Transport mode decision model - Perfetti Van Melle Breda (Breda -&gt; Rotterdam / Antwerp)&lt;/h1&gt;&lt;/header&gt;
+&lt;div id=&quot;controls&quot; role=&quot;toolbar&quot; aria-label=&quot;Chart detail&quot;&gt;
+  &lt;button id=&quot;less&quot; type=&quot;button&quot; aria-label=&quot;Show one level less&quot;&gt;&amp;minus; Less detail&lt;/button&gt;
+  &lt;span class=&quot;lvl&quot; id=&quot;lvl&quot; aria-live=&quot;polite&quot;&gt;&lt;/span&gt;
+  &lt;button id=&quot;more&quot; type=&quot;button&quot; aria-label=&quot;Show one level more&quot;&gt;More detail +&lt;/button&gt;
+  &lt;button id=&quot;full&quot; type=&quot;button&quot;&gt;Full chart&lt;/button&gt;
+  &lt;button id=&quot;reset&quot; type=&quot;button&quot;&gt;Reset&lt;/button&gt;
+  &lt;span id=&quot;crumbs&quot;&gt;&lt;/span&gt;
+&lt;/div&gt;
 &lt;div id=&quot;viewport&quot;&gt;&lt;div id=&quot;stage&quot;&gt;&lt;svg id=&quot;lines&quot;&gt;&lt;/svg&gt;
   &lt;div class=&quot;legend&quot; id=&quot;legend&quot;&gt;
     &lt;h2&gt;How to read this chart&lt;/h2&gt;
-    &lt;p&gt;Hover over a box to see where its data comes from. The tooltip colour shows how confident we are in the data:&lt;/p&gt;
+    &lt;p&gt;Click a box with a light bar underneath to follow that branch; use the buttons above to add or remove levels. Hover over a box to see where its data comes from. The tooltip colour shows how confident we are in the data:&lt;/p&gt;
     &lt;ul&gt;
       &lt;li&gt;&lt;span class=&quot;sw&quot; style=&quot;background:#34A853&quot;&gt;&lt;/span&gt;High&lt;/li&gt;
       &lt;li&gt;&lt;span class=&quot;sw&quot; style=&quot;background:#FFFF00&quot;&gt;&lt;/span&gt;Moderate&lt;/li&gt;
@@ -321,25 +339,59 @@ const MIN_GAP = 10;                    // clear space wanted between neighbourin
 const RING = { 1: 0.20, 2: 0.47, 3: 0.74 };   // depth -&gt; fraction of the outer ellipse (leaves always 1)
 const G_MODE = 1.5, G_METRIC = 0.7, G_SUB = 0.3;  // extra spacing (in box slots) between branches
 
-const nodes = {};
-ROWS.forEach(([id, parent, tip, color]) =&gt; { nodes[id] = { id, parent, tip, color, children: [] }; });
-ROWS.forEach(([id, parent]) =&gt; { if (parent) nodes[parent].children.push(nodes[id]); });
-const root = nodes[ROWS.find(r =&gt; !r[1])[0]];
-(function walk(n, d, path) { n.depth = d; n.path = path.concat(n); n.children.forEach(c =&gt; walk(c, d + 1, n.path)); })(root, 0, []);
-const leaves = [];
-(function collect(n) { if (!n.children.length) leaves.push(n); else n.children.forEach(collect); })(root);
-function leafSpan(n) { const L = []; (function c(x) { if (!x.children.length) L.push(x); else x.children.forEach(c); })(n); return L; }
-
-// units between consecutive leaves
-const STEP = [];
-for (let i = 1; i &lt; leaves.length; i++) {
-  const p = leaves[i - 1].path, q = leaves[i].path;
-  let k = 0; while (k + 1 &lt; p.length &amp;&amp; k + 1 &lt; q.length &amp;&amp; p[k + 1] === q[k + 1]) k++;
-  const lca = p[k];
-  let g = k === 0 ? G_MODE : k === 1 ? G_METRIC : (lca.children.every(c =&gt; !c.children.length) ? 0 : G_SUB);
-  STEP.push(1 + g);
+// ---- full tree (built once): aggregated confidence colours come from the WHOLE tree,
+// so a collapsed box shows the same colour it has in the full chart
+const ALL = {};
+ROWS.forEach(([id, parent, tip, color]) =&gt; { ALL[id] = { id, parent, tip, color, children: [] }; });
+ROWS.forEach(([id, parent]) =&gt; { if (parent) ALL[parent].children.push(ALL[id]); });
+const ROOT_ID = ROWS.find(r =&gt; !r[1])[0];
+(function walk(n, d) { n.depth = d; n.children.forEach(c =&gt; walk(c, d + 1)); })(ALL[ROOT_ID], 0);
+const MAX_DEPTH = Math.max(...Object.values(ALL).map(n =&gt; n.depth));
+function fullScore(n) {
+  if (n._score !== undefined) return n._score;
+  let sc = null;
+  if (n.color) sc = SCORE_OF[n.color.toUpperCase()] ?? null;
+  else if (n.children.length) {
+    const v = n.children.map(fullScore).filter(x =&gt; x !== null);
+    if (v.length) sc = Math.round(v.reduce((a, b) =&gt; a + b, 0) / v.length);
+  }
+  return (n._score = sc);
 }
-const UNITS = STEP.reduce((a, b) =&gt; a + b, 0);
+Object.values(ALL).forEach(n =&gt; {
+  if (!n.color &amp;&amp; n.children.length) { const sc = fullScore(n); if (sc) { n.color = CONF[sc]; if (!n.tip) n.tip = AGG_TIP; } }
+});
+
+// ---- current view: focus box F plus E levels below it, and F&#x27;s ancestors
+let FOCUS = ROOT_ID, EXTRA = 1;
+let nodes, root, leaves, STEP, UNITS;
+function visibleIds() {
+  const f = ALL[FOCUS], ids = new Set();
+  for (let a = f; a; a = a.parent ? ALL[a.parent] : null) ids.add(a.id);
+  (function down(n) { ids.add(n.id); if (n.depth &lt; f.depth + EXTRA) n.children.forEach(down); })(f);
+  return ids;
+}
+function rebuild() {
+  const ids = visibleIds();
+  nodes = {};
+  ids.forEach(id =&gt; { const a = ALL[id]; nodes[id] = { id, parent: a.parent, tip: a.tip, color: a.color, children: [], hidden: 0 }; });
+  ROWS.forEach(([id, parent]) =&gt; { if (parent &amp;&amp; nodes[id] &amp;&amp; nodes[parent]) nodes[parent].children.push(nodes[id]); });
+  Object.values(nodes).forEach(n =&gt; { n.hidden = ALL[n.id].children.length - n.children.length; });
+  root = nodes[ROOT_ID];
+  (function walk(n, d, path) { n.depth = d; n.path = path.concat(n); n.children.forEach(c =&gt; walk(c, d + 1, n.path)); })(root, 0, []);
+  leaves = [];
+  (function collect(n) { if (!n.children.length) leaves.push(n); else n.children.forEach(collect); })(root);
+  STEP = [];
+  for (let i = 1; i &lt; leaves.length; i++) {
+    const p = leaves[i - 1].path, q = leaves[i].path;
+    let k = 0; while (k + 1 &lt; p.length &amp;&amp; k + 1 &lt; q.length &amp;&amp; p[k + 1] === q[k + 1]) k++;
+    const lca = p[k];
+    let g = k === 0 ? G_MODE : k === 1 ? G_METRIC : (lca.children.every(c =&gt; !c.children.length) ? 0 : G_SUB);
+    STEP.push(1 + g);
+  }
+  UNITS = STEP.reduce((a, b) =&gt; a + b, 0) || 1;
+}
+rebuild();
+function leafSpan(n) { const L = []; (function c(x) { if (!x.children.length) L.push(x); else x.children.forEach(c); })(n); return L; }
 
 function radialLayout(natW, natH, gapHalfDeg, ring, nLeaf) {
   const PAD = 8;
@@ -411,25 +463,6 @@ function pickLayout(aspect, lw, lh, ring) {
 }
 /*ENGINE_END*/
 
-// A box with children but no colour of its own (every &quot;function of below&quot; box, and Decision)
-// takes the average score of the boxes directly under it, rounded to the nearest whole number (halves round up).
-function score(n) {
-  if (n._score !== undefined) return n._score;
-  let s = null;
-  if (n.color) s = SCORE_OF[n.color.toUpperCase()] ?? null;
-  else if (n.children.length) {
-    const v = n.children.map(score).filter(x =&gt; x !== null);
-    if (v.length) s = Math.round(v.reduce((a, b) =&gt; a + b, 0) / v.length);
-  }
-  return (n._score = s);
-}
-Object.values(nodes).forEach(n =&gt; {
-  if (!n.color &amp;&amp; n.children.length) {
-    const s = score(n);
-    if (s) { n.color = CONF[s]; if (!n.tip) n.tip = AGG_TIP; }
-  }
-});
-
 /* ============================================================
    6. DRAW
    ============================================================ */
@@ -458,8 +491,13 @@ function draw(res) {
     slot.style.left = (p.x - W / 2) + &#x27;px&#x27;; slot.style.top = (p.y - H / 2) + &#x27;px&#x27;;
     const box = document.createElement(&#x27;div&#x27;);
     box.className = &#x27;box&#x27;;
+    if (n.hidden &gt; 0 || (n.id !== ROOT_ID &amp;&amp; n.id !== FOCUS &amp;&amp; ALL[n.id].children.length)) box.classList.add(&#x27;more&#x27;);
+    if (n.id === FOCUS &amp;&amp; FOCUS !== ROOT_ID) box.classList.add(&#x27;focus&#x27;);
+    box.addEventListener(&#x27;click&#x27;, () =&gt; onBoxClick(n.id));
+    box.addEventListener(&#x27;keydown&#x27;, e =&gt; { if (e.key === &#x27;Enter&#x27;) onBoxClick(n.id); });
     const name = document.createElement(&#x27;span&#x27;); name.className = &#x27;name&#x27;; name.textContent = displayName(n.id);
     box.appendChild(name);
+    if (!n.tip &amp;&amp; n.id === ROOT_ID) { box.tabIndex = 0; }
     if (n.tip) {
       const bg = n.color || &#x27;#FFFFFF&#x27;;
       box.classList.add(&#x27;has-tip&#x27;); box.tabIndex = 0;
@@ -467,7 +505,7 @@ function draw(res) {
       const lo = p.x - TIP_W / 2, hi = p.x + TIP_W / 2;           // keep the enlarged box on the page
       const sx = lo &lt; 4 ? 4 - lo : hi &gt; natW - 4 ? natW - 4 - hi : 0;
       if (sx) box.style.setProperty(&#x27;--sx&#x27;, sx + &#x27;px&#x27;);
-      const tip = document.createElement(&#x27;span&#x27;); tip.className = &#x27;tip&#x27;; tip.textContent = n.tip;
+      const tip = document.createElement(&#x27;span&#x27;); tip.className = &#x27;tip&#x27;; tip.textContent = n.tip + (n.hidden &gt; 0 ? &#x27; (click to open &#x27; + n.hidden + &#x27; more)&#x27; : &#x27;&#x27;);
       box.appendChild(tip);
     }
     slot.appendChild(box); stage.appendChild(slot);
@@ -491,9 +529,45 @@ function fit() {
   stage.style.marginLeft = Math.max(0, (availW - res.natW * s) / 2) + &#x27;px&#x27;;
   viewport.style.height = (res.natH * s + 12) + &#x27;px&#x27;;
 }
+function depthLimit() { return ALL[FOCUS].depth + EXTRA; }
+function maxExtra() {
+  let m = 0; (function d(n) { m = Math.max(m, n.depth - ALL[FOCUS].depth); n.children.forEach(d); })(ALL[FOCUS]); return m;
+}
+function onBoxClick(id) {
+  const a = ALL[id];
+  if (id === ROOT_ID) { FOCUS = ROOT_ID; EXTRA = 1; update(); return; }
+  if (!a.children.length) return;                 // a data source: hover shows where it comes from
+  if (id === FOCUS) { FOCUS = a.parent; EXTRA = 1; update(); return; }   // click the focused box again: one step back up
+  FOCUS = id; EXTRA = 1; update();
+}
+function update() {
+  rebuild(); fit();
+  const mx = maxExtra();
+  document.getElementById(&#x27;less&#x27;).disabled = EXTRA &lt;= 1;
+  document.getElementById(&#x27;more&#x27;).disabled = EXTRA &gt;= mx;
+  document.getElementById(&#x27;full&#x27;).disabled = FOCUS === ROOT_ID &amp;&amp; EXTRA &gt;= mx;
+  document.getElementById(&#x27;reset&#x27;).disabled = FOCUS === ROOT_ID &amp;&amp; EXTRA === 1;
+  document.getElementById(&#x27;lvl&#x27;).textContent = &#x27;Level &#x27; + depthLimit() + &#x27; of &#x27; + MAX_DEPTH;
+  const path = []; for (let x = ALL[FOCUS]; x; x = x.parent ? ALL[x.parent] : null) path.unshift(x);
+  const cr = document.getElementById(&#x27;crumbs&#x27;);
+  cr.innerHTML = &#x27;&#x27;;
+  if (FOCUS !== ROOT_ID) {
+    cr.append(&#x27;Branch: &#x27;);
+    path.forEach((x, i) =&gt; {
+      if (i) cr.append(&#x27; \u203a &#x27;);
+      if (i &lt; path.length - 1) { const a = document.createElement(&#x27;a&#x27;); a.textContent = displayName(x.id); a.tabIndex = 0;
+        a.onclick = a.onkeydown = e =&gt; { if (e.type === &#x27;click&#x27; || e.key === &#x27;Enter&#x27;) { FOCUS = x.id; EXTRA = 1; update(); } }; cr.append(a); }
+      else { const b = document.createElement(&#x27;b&#x27;); b.textContent = displayName(x.id); cr.append(b); }
+    });
+  }
+}
+document.getElementById(&#x27;more&#x27;).onclick = () =&gt; { EXTRA = Math.min(EXTRA + 1, maxExtra()); update(); };
+document.getElementById(&#x27;less&#x27;).onclick = () =&gt; { EXTRA = Math.max(1, EXTRA - 1); update(); };
+document.getElementById(&#x27;full&#x27;).onclick = () =&gt; { FOCUS = ROOT_ID; EXTRA = MAX_DEPTH; update(); };
+document.getElementById(&#x27;reset&#x27;).onclick = () =&gt; { FOCUS = ROOT_ID; EXTRA = 1; update(); };
 let timer;
 window.addEventListener(&#x27;resize&#x27;, () =&gt; { clearTimeout(timer); timer = setTimeout(fit, 80); });
-fit();
+update();
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -528,10 +602,34 @@ fit();
   </div>
 </div></section>
 
+<section class="band" id="scope"><div class="wrap">
+  <h2>Scope check: why we stayed at two lanes</h2>
+  <p class="lead">We tried to widen the analysis from export containers on two port lanes to every PVM lane, with real customer destinations, on the expectation that AI could assemble the data. The public data could not support it, so the analysis stays at the two lanes it can answer honestly.</p>
+  <div class="cols">
+    <div class="card"><h3>What we tried</h3><p>Total lane visibility: 100% of PVM’s outbound goods by destination, with share of cargo, TEU and weight per lane, including maritime and multimodal legs.</p></div>
+    <div class="card"><h3>What we found</h3><p>The only public volume proxy (Dutch confectionery exports) is 5.6× Breda’s output and leaves out domestic sales. No public source names PVM’s ship-to locations, and PVM runs 31+ plants. Country-level lanes would be too aggregated to support a decision.</p></div>
+    <div class="card"><h3>What would unlock it</h3><p>PVM’s own shipment data (destinations, volumes by lane and mode) would let the same model run lane by lane. Until then, volume and port split remain proxies.</p></div>
+  </div>
+</div></section>
+
+<section class="band" id="downloads" style="background:var(--panel)"><div class="wrap">
+  <h2>Project files</h2>
+  <p class="lead">The model behind the dashboard, the presentation and the final report.</p>
+  <div class="cols">
+    <div class="card"><h3>Excel model</h3><p>All inputs, weights and sliders, with a source key and limitations sheet.</p><p style="margin-top:12px"><a class="btn" href="downloads/PVM_Transport_Mode_Model.xlsx" download>Download .xlsx</a></p></div>
+    <div class="card"><h3>Presentation</h3><p>The 17-slide project deck.</p><p style="margin-top:12px"><a class="btn" href="downloads/PVM_Modal_Shift_Final.pptx" download>Download .pptx</a></p></div>
+    <div class="card"><h3>Final report</h3><p>Decision, data landscape, design choices, deployment and sources.</p><p style="margin-top:12px"><a class="btn" href="downloads/Group-2_PVM_Final_Report.pdf" target="_blank" rel="noopener">Open PDF</a></p></div>
+  </div>
+</div></section>
+
 <footer class="band" id="team"><div class="wrap">
   <div><b>Team</b>Nelson Delarue, Emma Putod, Srikar Silveru, Peter Storey<br>Section 1, Group 2 · Brief 8</div>
   <div><b>Course</b>Business Intelligence & Logistics, MSc International Trade and Maritime Logistics, KEDGE Business School · Professor Jorge Clarke · November 2026</div>
   <div><b>Data</b>Map data © OpenStreetMap contributors (ODbL). Full sources are listed in the project report and the workbook’s Source_Key sheet.</div>
 </div></footer>
+<script>
+document.getElementById('ocfull').addEventListener('click',function(e){e.preventDefault();
+var b=new Blob([document.getElementById('ocframe').getAttribute('srcdoc')],{type:'text/html'});window.open(URL.createObjectURL(b),'_blank');});
+</script>
 </body>
 </html>
